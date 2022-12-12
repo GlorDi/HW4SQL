@@ -19,3 +19,39 @@ WHERE a.name NOT IN (
 	LEFT JOIN album a2 ON a2.album_id = aa.artist_id 
 	WHERE a2.year_album = 2020
 );
+
+SELECT DISTINCT name_collection FROM collection
+JOIN collection_track USING(collection_id)
+JOIN track USING(track_id)
+JOIN album USING(album_id)
+JOIN album_artist USING(album_id)
+JOIN artist USING(artist_id)
+WHERE name LIKE '%Рома%';
+
+SELECT name_album FROM album
+JOIN album_artist USING(album_id)
+JOIN artist USING(artist_id)
+JOIN genre_artist USING(artist_id)
+JOIN musical_genre USING(genre_id)
+GROUP BY name_album
+HAVING count(DISTINCT name_album) > 1;
+
+SELECT track_name FROM track
+JOIN collection_track USING(track_id)
+WHERE track_id IS NULL;
+
+SELECT artist.name, duration FROM track
+JOIN album USING(album_id)
+JOIN album_artist USING(album_id)
+JOIN artist USING(artist_id)
+GROUP BY artist.name, track.duration
+HAVING track.duration = (SELECT min(duration) FROM track);
+
+SELECT name_album, count(*) FROM album
+JOIN track USING(album_id)
+GROUP BY name_album
+HAVING count(*) = (SELECT count(*) FROM album
+	JOIN track USING(album_id)
+	GROUP BY name_album
+	ORDER BY count
+	LIMIT 1);
